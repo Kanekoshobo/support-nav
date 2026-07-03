@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>お問い合わせ案内</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7;
+    }
+    h1 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 12px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 14px;
+      font-size: 16px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .answer {
+      background: #f7f7f7;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .form-button {
+      display: block;
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>お問い合わせ案内</h1>
+  <p>お問い合わせ内容に近いものを選んでください。</p>
+
+  <div id="app"></div>
+
+  <script>
+    const formUrl = "https://docs.google.com/forms/d/e/ここにGoogleフォームURLを入れる/viewform";
+
+    const tree = {
+      "契約・料金について": {
+        "請求書について知りたい": "請求書はマイページの「請求情報」から確認できます。",
+        "解約について知りたい": "解約をご希望の場合は、契約者ご本人からのお手続きが必要です。"
+      },
+      "操作方法について": {
+        "ログインできない": "パスワード再設定ページから再設定をお試しください。",
+        "使い方が分からない": "よくある操作方法はヘルプページにまとめています。"
+      },
+      "不具合について": {
+        "画面が正しく表示されない": "ブラウザの更新、キャッシュ削除、別ブラウザでの確認をお試しください。",
+        "エラーが出る": "表示されているエラー文を控えたうえで、お問い合わせください。"
+      },
+      "その他": {
+        "上記に当てはまらない": "内容を確認しますので、お問い合わせフォームからご連絡ください。"
+      }
+    };
+
+    const app = document.getElementById("app");
+
+    function showMain() {
+      app.innerHTML = "<h2>大項目を選択してください</h2>";
+      Object.keys(tree).forEach(category => {
+        const button = document.createElement("button");
+        button.textContent = category;
+        button.onclick = () => showSub(category);
+        app.appendChild(button);
+      });
+    }
+
+    function showSub(category) {
+      app.innerHTML = `<h2>${category}</h2><p>詳しい内容を選択してください。</p>`;
+
+      Object.keys(tree[category]).forEach(item => {
+        const button = document.createElement("button");
+        button.textContent = item;
+        button.onclick = () => showAnswer(category, item);
+        app.appendChild(button);
+      });
+
+      const back = document.createElement("button");
+      back.textContent = "← 戻る";
+      back.onclick = showMain;
+      app.appendChild(back);
+    }
+
+    function showAnswer(category, item) {
+      const answer = tree[category][item];
+
+      app.innerHTML = `
+        <h2>${item}</h2>
+        <div class="answer">
+          <p>${answer}</p>
+        </div>
+        <button onclick="showMain()">解決したので最初に戻る</button>
+        <a class="form-button" href="${formUrl}" target="_blank">
+          解決しないので問い合わせる
+        </a>
+        <button onclick="showSub('${category}')">← 前の選択肢に戻る</button>
+      `;
+    }
+
+    showMain();
+  </script>
+</body>
+</html>
